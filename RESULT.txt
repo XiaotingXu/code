@@ -1,0 +1,168 @@
+/****************************************************************************/
+/*          This is the result of running this project                      */
+/****************************************************************************/
+
+xxu85@matrix:~/oop244/finalproject> g++ -std=c++0x -o finalproject *.cpp
+xxu85@matrix:~/oop244/finalproject> finalproject
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>1
+ Row | UPC    | Item Name          | Cost  | QTY|Need| Unit     | Expiry
+-----|--------|--------------------|-------|----|----|----------|----------
+   1 | 123    |Rice and Beans      |  12.00| 200| 200|Bags      |2018/12/22
+   2 | 122    |Bucket              |  11.30| 150| 300
+   3 | 124    |Corn                |   4.00|   0| 140|Packs     |2018/4/3
+   4 | 200    |Blanket             |  22.60|  10|  50
+   5 | 132    |Banana              |   0.99|   6|  10|Kilos     |2015/5/13
+   6 | 111    |Water Container     |  12.79|  19| 400
+---------------------------------------------------------------------------
+Total cost of support: $4569.98
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>2
+Non-Food Item Entry:
+Upc: 222
+Name: Clothes
+Price: 20
+Quantity On Hand: 2
+Quantity Needed: 4
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>1
+ Row | UPC    | Item Name          | Cost  | QTY|Need| Unit     | Expiry
+-----|--------|--------------------|-------|----|----|----------|----------
+   1 | 123    |Rice and Beans      |  12.00| 200| 200|Bags      |2018/12/22
+   2 | 122    |Bucket              |  11.30| 150| 300
+   3 | 124    |Corn                |   4.00|   0| 140|Packs     |2018/4/3
+   4 | 200    |Blanket             |  22.60|  10|  50
+   5 | 132    |Banana              |   0.99|   6|  10|Kilos     |2015/5/13
+   6 | 111    |Water Container     |  12.79|  19| 400
+   7 | 222    |Clothes             |  22.60|   2|   4
+---------------------------------------------------------------------------
+Total cost of support: $4615.18
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>4
+Please enter the UPC: 222
+Upc: 222
+Name: Clothes
+Price: 20.00
+Price after tax: 22.60
+Quantity On Hand: 2
+Quantity Needed: 4
+
+Please enter the number of purchased items: 2
+Updated!
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>1
+ Row | UPC    | Item Name          | Cost  | QTY|Need| Unit     | Expiry
+-----|--------|--------------------|-------|----|----|----------|----------
+   1 | 123    |Rice and Beans      |  12.00| 200| 200|Bags      |2018/12/22
+   2 | 122    |Bucket              |  11.30| 150| 300
+   3 | 124    |Corn                |   4.00|   0| 140|Packs     |2018/4/3
+   4 | 200    |Blanket             |  22.60|  10|  50
+   5 | 132    |Banana              |   0.99|   6|  10|Kilos     |2015/5/13
+   6 | 111    |Water Container     |  12.79|  19| 400
+   7 | 222    |Clothes             |  22.60|   4|   4
+---------------------------------------------------------------------------
+Total cost of support: $4660.38
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>4
+Please enter the UPC: 222
+Upc: 222
+Name: Clothes
+Price: 20.00
+Price after tax: 22.60
+Quantity On Hand: 4
+Quantity Needed: 4
+
+Please enter the number of purchased items: 5
+Too much items, only 0 is needed, please return the extra 5 items
+Updated!
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>1
+ Row | UPC    | Item Name          | Cost  | QTY|Need| Unit     | Expiry
+-----|--------|--------------------|-------|----|----|----------|----------
+   1 | 123    |Rice and Beans      |  12.00| 200| 200|Bags      |2018/12/22
+   2 | 122    |Bucket              |  11.30| 150| 300
+   3 | 124    |Corn                |   4.00|   0| 140|Packs     |2018/4/3
+   4 | 200    |Blanket             |  22.60|  10|  50
+   5 | 132    |Banana              |   0.99|   6|  10|Kilos     |2015/5/13
+   6 | 111    |Water Container     |  12.79|  19| 400
+   7 | 222    |Clothes             |  22.60|   4|   4
+---------------------------------------------------------------------------
+Total cost of support: $4660.38
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>3
+Perishable Item Entry:
+Upc: 333
+Name: water
+Price: 1
+Quantity On Hand: 3
+Quantity Needed: 4
+Unit: bottle
+Expiry date (YYYY/MM/DD) : 2017/10/17
+
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>1
+ Row | UPC    | Item Name          | Cost  | QTY|Need| Unit     | Expiry
+-----|--------|--------------------|-------|----|----|----------|----------
+   1 | 123    |Rice and Beans      |  12.00| 200| 200|Bags      |2018/12/22
+   2 | 122    |Bucket              |  11.30| 150| 300
+   3 | 124    |Corn                |   4.00|   0| 140|Packs     |2018/4/3
+   4 | 200    |Blanket             |  22.60|  10|  50
+   5 | 132    |Banana              |   0.99|   6|  10|Kilos     |2015/5/13
+   6 | 111    |Water Container     |  12.79|  19| 400
+   7 | 222    |Clothes             |  22.60|   4|   4
+   8 | 333    |water               |   1.00|   3|   4|bottle    |2017/10/17
+---------------------------------------------------------------------------
+Total cost of support: $4663.38
+Disaster Aid Supply Management Program
+1 - List Items
+2 - Add Non-food item Item
+3 - Add Perishable item
+4 - Update item quantity
+0 - Exit program
+>0
+Good Bye!
