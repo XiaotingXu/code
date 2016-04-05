@@ -1,0 +1,1195 @@
+Script started on Tue 08 Dec 2015 02:01:07 PM EST
+xxu85@matrix:~/oop345/finalproject/milestone3> who [Kami[Ki
+xxu85
+xxu85@matrix:~/oop345/finalproject/milestone3> cat *.cpp *.h
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <algorithm>
+#include "Utilities.h"
+#include "Item.h"
+#include "ItemOrder.h"
+#include "CustomerOrder.h"
+
+int MAX_ORDER_NUM = 10;
+char CustomerOrder::delimiter;
+size_t CustomerOrder::field_width;
+
+CustomerOrder::CustomerOrder(const std::string& record){
+	nOrders = 0;
+	order = nullptr;
+	std::string record_remain = record;
+	record_remain.erase(0,record_remain.find_first_not_of(' ')); //trim the leading whitespaces
+	record_remain.erase(record_remain.find_last_not_of(' ') + 1); //trim the trailing whitespaces
+	Utilities utility;
+	size_t next_pos = 0;
+	bool more = true;
+	std::string cust_order[MAX_ORDER_NUM];
+	std::string msg;
+	int i = 0;
+	if(record!=""){
+		while(i< MAX_ORDER_NUM && !record_remain.empty()){
+			record_remain =  utility.Utilities::nextToken(record_remain, next_pos, more);
+			cust_order[i] = record_remain.substr(0,next_pos);
+			cust_order[i].erase(0,cust_order[i].find_first_not_of(' ')); //trim the leading whitespaces
+			cust_order[i].erase(cust_order[i].find_last_not_of(' ') + 1); //trim the trailing whitespaces
+			i++;
+		}
+		i = i-1; // for the last i++
+		if(cust_order[0] == ""){
+			msg = record + " <-- *** no token found before the delimiter ***";
+			throw msg;
+		}
+		else if(cust_order[1] == ""){
+			msg = record + "<-- *** no customer name found ***";
+			throw msg;
+		}
+		else if(cust_order[2] == ""){
+			msg = record + "<-- *** no product name found ***";
+			throw msg;
+		}
+		else if(cust_order[3] == ""){
+			msg = record + "<-- *** no item ordered ***";
+			throw msg;
+		}
+		else{
+			name = cust_order[0];
+			product = cust_order[1];
+			nOrders = i - 2;
+			order = new ItemOrder[nOrders];
+			for(int j=0; j < nOrders; j++){
+				std::string str = cust_order[j+2];
+				order[j]= ItemOrder(str);
+			}
+			if(field_width < utility.Utilities::getFieldWidth())
+				field_width = utility.Utilities::getFieldWidth(); 
+		}
+	}
+}
+
+CustomerOrder::CustomerOrder(const CustomerOrder& src){
+	std::string msg = "Cannot call copy constructor because duplicate customer orders are forbid.";
+	throw msg;
+}
+
+CustomerOrder::CustomerOrder(CustomerOrder&& src){
+	name = src.name;
+	product = src.product;
+	nOrders = src.nOrders;
+	order = src.order;
+	src.order = nullptr;
+	src.nOrders = 0;
+}
+
+CustomerOrder&& CustomerOrder::operator=(CustomerOrder&& src){
+	if(this != &src){
+		name = src.name;
+		product = src.product;
+		nOrders = src.nOrders;
+		order = src.order;
+		src.order = nullptr;
+		src.nOrders = 0;
+	}
+	return std::move(*this);
+}
+
+CustomerOrder::~CustomerOrder(){
+	delete [] order;
+}
+
+unsigned int CustomerOrder::noOrders() const{
+	return nOrders;
+}
+
+const std::string& CustomerOrder::operator[](unsigned int i) const{
+		std::string msg = "*** Error! This customer only has " + std::to_string(nOrders) + " orders. ***";
+		if(i < nOrders){
+			return order[i].getName();
+		}
+		else 
+			throw msg;
+}
+
+void CustomerOrder::fill(Item& item){
+	for(unsigned i = 0; i < nOrders; i++){
+		if(item.getName() == order[i].getName()){
+			order[i].fill(item.getCode());
+			item++;
+		}
+	}
+}
+
+void CustomerOrder::remove(Item& item){
+	for(unsigned i = 0; i < nOrders; i++){
+		if(item.getName() == order[i].getName() && order[i].isFilled()){
+			order[i].clear();
+		}
+	}
+}
+
+bool CustomerOrder::empty() const{
+	if(!nOrders && !order) // if the current object is in safe empty state
+		return true;
+	else
+		return false;
+}
+
+void CustomerOrder::display(std::ostream& os) const{
+	os << std::left << std::setw(field_width) << name << ": " << std::setw(field_width) << product << std::endl;
+	for(unsigned i = 0; i < nOrders; i++){
+		order[i].display(os);
+	}
+}
+
+void CustomerOrder::setDelimiter(const char c){
+	delimiter = c;
+}
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <iostream>
+#include "Item.h"
+#include "Utilities.h"
+
+char Item::delimiter;
+size_t Item::field_width;
+
+Item::Item(const std::string& record){
+	details = "no detailed description";
+	code = 1;
+	if(record!=""){
+		Utilities utility;
+		std::string item[5];
+		unsigned i = 0;
+		size_t next_pos = 0;
+		bool more = true;
+		std::string msg;
+		std::string record_remain = record;
+		record_remain.erase(0,record_remain.find_first_not_of(' ')); //trim the leading whitespaces
+		record_remain.erase(record_remain.find_last_not_of(' ') + 1); //trim the trailing whitespaces
+		while(i < 5 && record_remain != ""){
+			record_remain = utility.Utilities::nextToken(record_remain, next_pos, more);			
+			item[i] = record_remain.substr(0,next_pos);
+			item[i].erase(0,item[i].find_first_not_of(' ')); //trim the leading whitespaces
+			item[i].erase(item[i].find_last_not_of(' ') + 1); //trim the trailing whitespaces
+			i++;
+		}
+		if(item[0] == ""){
+			msg = record + " <-- *** no token found before the delimiter ***";
+			throw msg;
+		}
+		else if(item[1] == ""){
+			msg = record + " <-- *** no name of the source task found ***";
+			throw msg;
+		}
+		else if(item[2] == ""){
+			msg = record + " <-- *** no name of the destination task found ***";
+			throw msg;			
+		}
+		else{ //The first three fields are required, and the fourth as well as the fifth is  optional.
+			name = item[0];
+			source = item[1];
+			destination = item[2];
+			if(item[3] != ""){
+				code = atoi(item[3].c_str());
+				if(item[4] != "")
+					details = item[4];
+			}
+			if(field_width < utility.Utilities::getFieldWidth())
+				field_width = utility.Utilities::getFieldWidth();
+		}
+	}
+}
+
+bool Item::empty() const{
+		if(details == "no detailed description" && code == 1)  //safe empty state
+			return true;
+		else
+			return false;
+}
+
+void Item::operator++(int){
+	code++;
+}
+
+unsigned int Item::getCode() const{
+	return code;
+}
+
+const std::string& Item::getName() const{
+	return name;
+}
+
+const std::string& Item::getSource() const{
+	return source;
+}
+
+const std::string& Item::getDestination() const{
+	return destination;
+}
+
+void Item::display(std::ostream& os, bool full) const{
+	size_t CODE_WIDTH = 5;
+	os << std::left << std::setw(field_width) << name << "[" << std::right << std::setw(CODE_WIDTH) << std::setfill('0') << code << "] " << std::setfill(' ');
+	if(full){
+		os << "From " << std::left << std::setw(field_width) << source << " To " << destination  << '\n' << std::right << std::setfill(' ') << std::setw(field_width + CODE_WIDTH + 2) << ":" << " " << std::left << details;
+	}
+	os << std::endl;
+}	
+
+void Item::setDelimiter(const char c){
+	delimiter = c;	
+}
+
+size_t Item::getFieldWidth(){
+	return field_width;	
+}#include <iostream>
+#include <vector>
+#include "ItemManager.h"
+#include "Item.h"
+
+void ItemManager::push_back(Item&& src){
+	items.push_back(std::move(src));
+}
+
+std::vector<Item>::iterator ItemManager::begin(){
+	return items.begin();
+}
+
+std::vector<Item>::iterator ItemManager::end(){
+	return items.end();
+}
+
+const std::vector<Item>::const_iterator ItemManager::cbegin() const{
+	return items.cbegin();
+}
+
+const std::vector<Item>::const_iterator ItemManager::cend() const{
+	return items.cend();
+}
+
+void ItemManager::display(std::ostream& os, bool full) const{
+	for(auto it = items.begin(); it != items.end(); ++it){
+		it->display(os, full);
+	}
+}#include <iostream>
+#include <string>
+#include <iomanip>
+#include "Item.h"
+#include "ItemOrder.h"
+
+ItemOrder::ItemOrder(const std::string& _name){
+	filled = false;
+	code = 0;
+	if(_name != "")
+		name = _name;
+}
+
+bool ItemOrder::asksFor(const Item& item) const{
+	if(item.empty())
+		return false;
+	else
+		return true;
+}
+
+bool ItemOrder::isFilled() const{
+	if(filled)
+		return true;
+	else
+		return false;
+}
+
+void ItemOrder::fill(const unsigned int c){
+	code = c;
+	filled = true;
+}
+
+void ItemOrder::clear(){
+	filled = false;
+	code = 0;
+}
+
+const std::string& ItemOrder::getName() const{
+	return name;
+}
+
+void ItemOrder::display(std::ostream& os) const{
+	size_t CODE_WIDTH = 5;
+	if(!filled)
+		os << " - ";
+	else
+		os << " + ";
+	os << "[" << std::right << std::setfill('0') << std::setw(CODE_WIDTH) << code << std::setfill(' ') << "] " << name << std::endl;
+}#include <iostream>
+#include <string>
+#include <algorithm>
+#include "OrderManager.h"
+#include "ItemManager.h"
+#include "CustomerOrder.h"
+#include "Item.h"
+
+
+void OrderManager::push_back(CustomerOrder&& src){
+	customerOrders.push_back(std::move(src) );
+}
+
+CustomerOrder&& OrderManager::extract(){
+	return std::move(customerOrders.back());
+}
+
+void OrderManager::pop(){
+	customerOrders.pop_back();
+}
+
+bool OrderManager::empty() const{
+	if(customerOrders.empty())
+		return true;
+	else
+		return false;
+}
+
+std::vector<CustomerOrder>::iterator OrderManager::begin(){
+	return customerOrders.begin();
+}
+
+std::vector<CustomerOrder>::iterator OrderManager::end(){
+	return customerOrders.end();
+}
+
+const std::vector<CustomerOrder>::const_iterator OrderManager::cbegin() const{
+	return customerOrders.cbegin();
+}
+
+const std::vector<CustomerOrder>::const_iterator OrderManager::cend() const{
+	return customerOrders.cend();
+}
+
+void OrderManager::display(std::ostream& os) const{
+	for(auto it = customerOrders.cbegin(); it != customerOrders.cend(); ++it){
+		it->display(os);
+	}
+}
+
+void validate(const OrderManager& order, const ItemManager& item, std::ostream& os){
+	//bool found = false;
+	for(auto it_order = order.cbegin(); it_order != order.cend(); ++it_order){
+		for(auto i = 0; i < it_order->noOrders(); ++i){
+			if(std::find_if(item.cbegin(), item.cend(), [=](Item pItem)->bool{return (*it_order)[i] == pItem.getName();}) == item.cend())
+				os << (*it_order)[i] << " is unavailable" << std::endl;	
+				/*for(auto it_item = item.cbegin(); it_item != item.cend(); ++it_item){
+				if((*it_order)[i] == it_item->getName())
+					found = true;
+				if(found)
+					break;
+			}
+			if(!found)
+				os << (*it_order)[i] << " is unavailable" << std::endl;
+			else 
+				found = false;*/
+		}
+	}
+}
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <iomanip>
+#include <cctype>
+#include <algorithm>
+#include "Task.h"
+#include "Utilities.h"
+
+char Task::delimiter;
+size_t Task::field_width;
+
+Task::Task(const std::string& record){
+	slots = "1";
+	pNextTask[0] = pNextTask[1] = nullptr;
+	std::string record_remain = record;
+	record_remain.erase(0,record_remain.find_first_not_of(' ')); //trim the leading whitespaces
+	record_remain.erase(record_remain.find_last_not_of(' ') + 1); //trim the trailing whitespaces
+	size_t next_pos = 0;
+	std::string task[4];
+	Utilities utility;
+	unsigned i = 0;
+	bool more = true;
+	std::string msg;
+	while(i < 4 && !record_remain.empty()){
+		record_remain = utility.Utilities::nextToken(record_remain, next_pos, more);	
+		task[i] = record_remain.substr(0,next_pos);
+		task[i].erase(0,task[i].find_first_not_of(' ')); //trim the leading whitespaces
+		task[i].erase(task[i].find_last_not_of(' ') + 1); //trim the trailing whitespaces
+		i++;
+	}
+	if(task[0]==""){
+		msg = record + " <-- *** no token found before the delimiter ***";
+		throw msg;
+	}
+	else{
+		name = task[0];
+		if(task[1] != ""){	
+			slots = task[1];
+			if(task[2] != ""){
+				nextTask[0] = task[2];
+					if(task[3] != "")
+						nextTask[1] = task[3];
+			}
+		}
+		if(field_width < utility.Utilities::getFieldWidth())
+			field_width = utility.Utilities::getFieldWidth() + 2;  //2 is for "[]"
+	}
+}
+
+const std::string& Task::getName() const{
+	return name;
+}
+
+unsigned int Task::getSlots() const{
+	return atoi(slots.c_str());
+}
+bool Task::validate(const Task& task){
+	bool valid = false;
+	if(*this == task){
+		return valid;
+	}
+	if(nextTask[0] == task.getName()){
+		pNextTask[0] = &task;
+	}
+	if(nextTask[1] == task.getName()){
+		pNextTask[1] = &task;
+	}
+	if(nextTask[0] != "" && nextTask[1] != "" && pNextTask[0] && pNextTask[1])
+		valid = true;
+	if(nextTask[0] != "" && nextTask[1] == "" && pNextTask[0])
+		valid = true;
+	if(nextTask[0] == "" && nextTask[1] != "" && pNextTask[1])
+		valid = true;
+	if(nextTask[0] == "" && nextTask[1] == "" && !pNextTask[0] && !pNextTask[1])
+		valid = true;
+	return valid;
+}
+
+const Task* Task::getNextTask(Quality quality) const{
+	std::string msg;
+	if(quality == passed){
+		if(pNextTask[0])
+			return pNextTask[0];
+		else{
+			msg = "Validate [" + nextTask[0] + "] @ [" + name + "]***";
+			throw msg;
+		}
+	}
+	else{ 
+		if(pNextTask[1])
+			return pNextTask[1];
+		else{
+			msg = "Validate [" + nextTask[1] + "] @ [" + name + "]***";
+			throw msg;
+		}
+	}
+}
+
+void Task::display(std::ostream& os) const{
+	std::string _name = "[" + name + "]";
+	std::string _slots = "[" + slots + "]";
+	if(!name.empty()){
+		os << "Task Name    : " << std::left << std::setw(field_width) << _name << " " << _slots << std::right << std::endl;
+		if(!nextTask[0].empty()){
+			if(!pNextTask[0]){
+				std::string _continue = "[" + nextTask[0] + "]";
+				os << " Continue to : " << std::left <<std::setw(field_width) << _continue << std::right<< " ***to be validated***" << std::endl;			
+			}
+			else{
+				std::string _continue = "[" +getNextTask(passed)->name + "]";
+				os << " Continue to : " << std::left << std::setw(field_width) << _continue << std::endl;
+			}
+		}
+		if(!nextTask[1].empty()){
+			if(!pNextTask[1]){
+				std::string _redirect = "[" + nextTask[1] + "]";
+				os << " Redirect to : " << std::left << std::setw(field_width) << _redirect << std::right << " ***to be validated***" << std::endl;
+			}
+			else{
+				std::string _redirect = "[" + getNextTask(redirect)->name + "]";
+				os << " Redirect to : " << std::left << std::setw(field_width) << _redirect << std::endl;
+			}
+		}
+	}
+}
+
+void Task::setDelimiter(const char c){
+	delimiter = c;
+}
+
+size_t Task::getFieldWidth(){
+	return field_width;
+}
+
+ bool operator==(const Task& t1, const Task& t2){
+	 if(t1.getName() == t2.getName() )
+		 return true;
+	 else
+		 return false;
+ }
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include "Task.h"
+#include "ItemManager.h"
+#include "TaskManager.h"
+#include "Utilities.h"
+#include "Item.h"
+
+
+void TaskManager::push_back(Task&& src){
+	tasks.push_back(std::move(src));
+}
+
+std::vector<Task>::iterator TaskManager::begin(){
+	return tasks.begin();
+}
+
+std::vector<Task>::iterator TaskManager::end(){
+	return tasks.end();
+}
+
+const std::vector<Task>::const_iterator TaskManager::cbegin() const{
+	return tasks.cbegin();
+}
+
+const std::vector<Task>::const_iterator TaskManager::cend() const{
+	return tasks.cend();
+}
+
+void TaskManager::validate(std::ostream& os){
+	bool valid = true;
+	for(auto i = 0; i < tasks.size() && valid; ++i){
+		bool invalid = true;
+		for(auto j = 0; j < tasks.size() && invalid; ++j){
+			 if (tasks[i].validate(tasks[j]))
+                invalid = false;
+		}
+		valid = !invalid;
+	}
+	if(!valid)
+       std::cerr << "*** Not all Tasks have been validated ***\n";
+}
+
+void TaskManager::display(std::ostream& os) const{
+	for(auto it = tasks.begin(); it != tasks.end(); ++it){
+		it->display(os);
+	}
+}
+
+void validate(const TaskManager& task, const ItemManager& item, std::ostream& os){
+	bool source_found = false;
+	bool destination_found = false;
+	for(auto it_item = item.cbegin(); it_item != item.cend(); ++it_item){
+		for(auto it_task = task.cbegin(); it_task != task.cend() && !source_found && !destination_found; ++ it_task){
+			if(it_task->getName() == it_item->getSource())
+				source_found = true;
+			if(it_task->getName() == it_item->getDestination())
+				destination_found = true;
+		}
+		if(!source_found){
+			os << it_item->getSource() << " is unavailable" << std::endl;
+		}
+		else
+			source_found = false;
+		if(!destination_found){
+			os << it_item->getDestination() << " is unavailable" << std::endl;
+		}
+		else
+			destination_found = false;
+	}
+	
+}#include <string>
+#include <algorithm>
+#include "Utilities.h"
+
+char Utilities::delimiter;
+size_t Utilities::field_width;
+ 	
+Utilities::Utilities(size_t minimum_field_width){
+	field_width = minimum_field_width;
+}
+
+void Utilities::setFieldWidth(size_t fw){
+	field_width = fw;
+}
+
+size_t Utilities::getFieldWidth() const{
+	return field_width;
+}
+
+const std::string Utilities::nextToken(const std::string& str, size_t& next_pos, bool& more){
+	size_t fw;
+	std::string str_tmp = str;
+	std::string thisToken;
+	thisToken = str_tmp.substr(0,next_pos);	//extract the current token
+	thisToken.erase(0,thisToken.find_first_not_of(' ')); //trim the leading whitespaces
+	thisToken.erase(thisToken.find_last_not_of(' ') + 1);	//trim the trailing whitesapces
+	fw = thisToken.size();
+	if(fw > field_width)
+		field_width = fw;
+	if(more){
+		if(next_pos != 0)
+			str_tmp = str_tmp.substr(next_pos+1); //cut the current token
+		if(str_tmp.find_first_of(getDelimiter()) != std::string::npos){ //determine whether there are more tokens or not
+			next_pos = str_tmp.find_first_of(getDelimiter());
+			more = true;
+		}
+		else{
+			next_pos = std::string::npos;
+			more = false;
+		}
+	}
+	else //after extracting last token
+		str_tmp = "";
+	return str_tmp;
+}
+
+void Utilities::setDelimiter(const char c){
+	delimiter = c;
+}
+
+const char Utilities::getDelimiter(){
+	return delimiter;
+}// Manager Milestone - Main Program
+// Milestome_3.cpp
+// Chris Szalwinski
+// v1.0 16/11/2015
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <memory>
+#include "Task.h"
+#include "TaskManager.h"
+#include "CustomerOrder.h"
+#include "OrderManager.h"
+#include "Item.h"
+#include "ItemManager.h"
+#include "Utilities.h"
+
+template<typename M, typename T>
+void loadFromFile(const char*, M&, std::ostream&);
+template<>
+void loadFromFile<TaskManager, Task>(const char*, TaskManager&, std::ostream&);
+
+int main(int argc, char** argv) {
+	// process command line arguments
+	if (argc != 5) {
+		std::cerr << "*** invalid number of arguments ***\n"
+			<< "Usage: " << argv[0] << " tasks_file order_file item_file delimiter\n";
+		exit(1);
+	}
+	std::cout << "Command Line Arguments\n----------------------\n";
+	std::cout << "Task File Specified           = " << argv[1] << "\n";
+	std::cout << "Customer Order File Specified = " << argv[2] << "\n";
+	std::cout << "Item File Specified           = " << argv[3] << "\n";
+	std::cout << "File Record Field Delimiter   = " << argv[4][0] << "\n\n";
+	Utilities::setDelimiter(argv[4][0]);
+	Task::setDelimiter(argv[4][0]);
+	CustomerOrder::setDelimiter(argv[4][0]);
+	Item::setDelimiter(argv[4][0]);
+	// end of command line processing
+
+	// Load, accept, validate and display the Tasks
+	//
+	std::cout << "Building the Network of Tasks\n-----------------------------\n";
+	TaskManager taskManager;
+	loadFromFile<TaskManager, Task>(argv[1], taskManager, std::cerr);
+	taskManager.display(std::cout);
+	std::cout << "\nValidating the Set of Tasks\n---------------------------\n";
+	taskManager.validate(std::cerr);
+	std::cout << "\nList of Accepted Tasks\n----------------------\n";
+	taskManager.display(std::cout);
+
+	// Load, accept and display the Customer Orders
+	//
+	std::cout << "\n*** Load and Accept the Customer Orders ***\n";
+	OrderManager orderManager;
+	loadFromFile<OrderManager, CustomerOrder>(argv[2], orderManager, std::cerr);
+	std::cout << "\nList of Accepted Customer Orders\n--------------------------------\n";
+	orderManager.display(std::cout);
+
+	// Load, accept and display the Items in Stock
+	//
+	std::cout << "\n*** Load and accept the Items in Stock ***\n";
+	ItemManager itemManager;
+	loadFromFile<ItemManager, Item>(argv[3], itemManager, std::cerr);
+	std::cout << "\nList of In-Stock Items\n----------------------\n";
+	itemManager.display(std::cout, true);
+
+	// Validate the Items in the Customer Orders
+	validate(orderManager, itemManager, std::cout);
+
+	// Validate the Tasks in each Available Item
+	validate(taskManager, itemManager, std::cerr);
+
+	// Fill the Customer Orders with the Available Items
+	std::cout << "\n*** Fill the Customer Orders ***\n";
+	for (auto i = itemManager.begin(); i != itemManager.end(); i++) {
+		for (auto s = orderManager.begin(); s != orderManager.end(); s++)
+			s->fill(*i);
+	}
+
+	// Display the Processed Customer Orders
+	std::cout << "\nList of Processed Customer Orders\n---------------------------------\n";
+	orderManager.display(std::cout);
+
+	// Terminate
+	std::cout << "\nDone!\nPress Enter Key to Exit ... ";
+	char c;
+	std::cin.get(c);
+}
+
+template<typename M, typename T>
+void loadFromFile(const char* fileName, M& manager, std::ostream& os) {
+	std::ifstream file(fileName);
+	if (!file) {
+		os << "*** Cannot open file named " << fileName << " ***\n";
+		exit(1);
+	}
+	while (file) {
+		std::string record;
+		std::getline(file, record);
+		if (file) {
+			try {
+				std::unique_ptr<T> entry(new T(record));
+				if (!entry->empty())
+					manager.push_back(std::move(*entry));
+			}
+			catch (const std::string& msg) {
+				os << msg << std::endl;
+			}
+		}
+	}
+}
+
+template<>
+void loadFromFile<TaskManager, Task>(const char* fileName, TaskManager& manager, std::ostream& os) {
+	std::ifstream file(fileName);
+	if (!file) {
+		os << "*** Cannot open file named " << fileName << " ***\n";
+		exit(1);
+	}
+	while (file) {
+		std::string record;
+		std::getline(file, record);
+		if (file) {
+			try {
+				std::unique_ptr<Task> entry(new Task(record));
+				if (!entry->getName().empty())
+					manager.push_back(std::move(*entry));
+			}
+			catch (const std::string& msg) {
+				os << msg << std::endl;
+			}
+		}
+	}
+}
+ #pragma once
+ // CustomerOrder Milestone - CustomerOrder Interface
+ // CustomerOrder.h
+ // Chris Szalwinski
+ // v1.0 9/11/2015
+ #include <iostream>
+ #include <string>
+
+ class Item;
+ class ItemOrder;
+
+ class CustomerOrder {
+     std::string name;
+     std::string product;
+     ItemOrder* order;
+     unsigned int nOrders;
+     static char delimiter;
+     static size_t field_width;
+ public:
+     CustomerOrder(const std::string&);
+     CustomerOrder(const CustomerOrder&);
+     CustomerOrder& operator=(const CustomerOrder&) = delete; 
+     CustomerOrder(CustomerOrder&&);
+     CustomerOrder&& operator=(CustomerOrder&&);
+     ~CustomerOrder();
+     unsigned int noOrders() const;
+     const std::string& operator[](unsigned int i) const;
+     void fill(Item&);
+     void remove(Item&);
+     bool empty() const;
+     void display(std::ostream&) const;
+     static void setDelimiter(const char);
+ };
+ #pragma once
+ // CustomerOrder Milestone - Item Interface
+ // Item.h
+ // Chris Szalwinski
+ // v1.0 - 9/11/2015
+ #include <iostream>
+ #include <string>
+
+ class Item {
+     std::string name;
+     std::string source;
+     std::string destination;
+     std::string details;
+     unsigned int code;
+     static char delimiter;
+     static size_t field_width;
+ public:
+     Item(const std::string& = std::string());
+     bool empty() const;
+     void operator++(int);
+     unsigned int getCode() const;
+     const std::string& getName() const;
+     const std::string& getSource() const;
+     const std::string& getDestination() const;
+     void display(std::ostream&, bool = false) const; 
+     static void setDelimiter(const char);
+     static size_t getFieldWidth();
+ }; #pragma once
+ // Manager Milestone - ItemManager Interface
+ // ItemManager.h
+ // Chris Szalwinski
+ // v1.0 - 16/11/2015
+ #include <iostream>
+ #include <vector>
+ 
+class Item;   //have to declare at first
+ 
+ class ItemManager {
+     std::vector<Item> items;
+ public:
+     void push_back(Item&&);
+     std::vector<Item>::iterator begin();
+     std::vector<Item>::iterator end();
+     const std::vector<Item>::const_iterator cbegin() const; 
+     const std::vector<Item>::const_iterator cend() const;
+     void display(std::ostream&, bool = false) const;
+ };
+ #pragma once
+ // CustomerOrder Milestone - ItemOrder Interface
+ // ItemOrder.h
+ // Chris Szalwinski
+ // v1.0 - 9/11/2015
+ #include <iostream>
+ #include <string>
+
+ class Item;
+
+ class ItemOrder {
+     std::string name;
+     bool filled;
+     unsigned int code;
+ public:
+     ItemOrder(const std::string& = std::string()); 
+     bool asksFor(const Item&) const;
+     bool isFilled() const;
+     void fill(const unsigned int);
+     void clear();
+     const std::string& getName() const;
+     void display(std::ostream&) const;
+ };
+ #pragma once
+ // Manager Milestone - OrderManager Interface
+ // OrderManager.h
+ // Chris Szalwinski
+ // v1.0 - 16/11/2015
+ #include <iostream>
+ #include <string>
+ #include <vector>
+
+ class ItemManager;
+ class CustomerOrder;
+
+ class OrderManager {
+     std::vector<CustomerOrder> customerOrders;
+ public:
+     void push_back(CustomerOrder&&);
+	 CustomerOrder&& extract();
+     void pop();
+     bool empty() const;
+     std::vector<CustomerOrder>::iterator begin();
+     std::vector<CustomerOrder>::iterator end();
+     const std::vector<CustomerOrder>::const_iterator cbegin() const;
+     const std::vector<CustomerOrder>::const_iterator cend() const;
+     void display(std::ostream&) const;
+ };
+
+ void validate(const OrderManager&, const ItemManager&, std::ostream&); 
+ #pragma once
+ // Task Milestone - Task Interface
+ // Task.h
+ // Chris Szalwinski
+ // v1.0 - 24/10/2015
+ // v1.1 - 12.11.2015
+ #include <iostream>
+ #include <string>
+
+ class Task {
+     std::string name;
+     std::string slots;
+     std::string nextTask[2];
+     const Task* pNextTask[2];
+     static char delimiter;
+     static size_t field_width;
+   public:
+     enum Quality {
+         passed,
+         redirect
+     };
+     Task(const std::string& record);
+     const std::string& getName() const;
+     unsigned int getSlots() const;
+     bool validate(const Task& task);
+     const Task* getNextTask(Quality quality) const; 
+     void display(std::ostream&) const;
+     static void setDelimiter(const char c);
+     static size_t getFieldWidth();
+ };
+
+ bool operator==(const Task&, const Task&);#pragma once
+ // Manager Milestone - TaskManager Interface
+ // TaskManager.h
+ // Chris Szalwinski
+ // v1.0 - 16/11/2015
+ #include <iostream>
+ #include <vector>
+
+ class Task;
+ class ItemManager;
+
+ class TaskManager {
+     std::vector<Task> tasks;
+ public:
+     void push_back(Task&&);
+     std::vector<Task>::iterator begin();
+     std::vector<Task>::iterator end();
+     const std::vector<Task>::const_iterator cbegin() const;
+     const std::vector<Task>::const_iterator cend() const;
+     void validate(std::ostream&);
+     void display(std::ostream&) const;
+ };
+
+ void validate(const TaskManager&, const ItemManager&, std::ostream&); 
+ #pragma once
+ // Milestone 1 - Utilities Interface
+ // Utilities.h
+ // Chris Szalwinski
+ // v1.0 - 24/10/2015
+ #include <string>
+
+ const unsigned int CODE_WIDTH = 5; // item code field width (later)
+
+ class Utilities {
+     static size_t field_width;//size_t field_width;
+     static char delimiter;
+ public:
+     Utilities(size_t minimum_field_width = 1u);
+     void setFieldWidth(size_t fw);
+     size_t getFieldWidth() const;
+     const std::string nextToken(const std::string& str, size_t& next_pos, bool& more);
+     static void setDelimiter(const char c);
+     static const char getDelimiter();
+ };xxu85@matrix:~/oop345/finalproject/milestone3> cat task.dat 
+Power Supply | 4 | Motherboard
+Motherboard     |           3 | CPU |          Remove CPU
+       Remove CPU         |            1 |CPU           
+CPU | 5 | Memory | Remove CPU
+Remove CPU | 1 | CPU
+Memory | 4 | SSD | Remove Memory
+Remove Memory | 1 | Memory
+SSD    |      4         | GPU |          Remove SSD
+Remove SSD     | 1   |SSD
+GPU|3|Test
+Test | 4 | Approve | Repair
+||
+Test / 4 / Approve / Repair
+|Remove SSD|1|SSD|
+CPU | 5 | Memory | Remove CPU | Remove CPU | Remove CPU
+4 | SSD | GPU | Remove SSD
+Repair
+ Approvexxu85@matrix:~/oop345/finalproject/milestone3> cat CustomerOrders.dat 
+  Fardad Soleimanloo | Dell Precision 3600 |  CPU | Memory | Memory       |   
+  Joseph Hughes      | HP Z230             | CPU  | Memory
+  Chris Szalwinski   | HP Z350             |  CPU | Memory | SSD          |   GPU
+  Elliott Coleshill  | HP Apollo 1000      | CPU  | MEMORY | Power Supply |   GPU
+
+|||
+| Peter McIntyre     |
+xxu85@matrix:~/oop345/finalproject/milestone3> cat ItemList.dat 
+             CPU | CPU       |      Remove CPU   | 300|Central Processing Unit              
+Memory|Memory     |Remove Memory     |400|    Samsung Memory Stick
+||
+|Fan|Fan| Place fan       |900| CoolMasters R56|||
+ | | | | |
+GPU|GPU|              Remove GPU       |500|               Nvidia Geforce 750M
+||PCIe SSD|
+Power Supply          |Power Supply|          Remove Power Supply      |100|              xxu85@matrix:~/oop345/finalproject/milestone3> g++ -o milestone3 -std+c++0x [1P[1@=[C[C[C[C[C[C * . c p p 
+xxu85@matrix:~/oop345/finalproject/milestone3> milet[Kstone3 task.dat CustomerOrders.dat ItemList.dat \|
+Command Line Arguments
+----------------------
+Task File Specified           = task.dat
+Customer Order File Specified = CustomerOrders.dat
+Item File Specified           = ItemList.dat
+File Record Field Delimiter   = |
+
+Building the Network of Tasks
+-----------------------------
+|| <-- *** no token found before the delimiter ***
+|Remove SSD|1|SSD| <-- *** no token found before the delimiter ***
+Task Name    : [Power Supply]                [4]
+ Continue to : [Motherboard]                 ***to be validated***
+Task Name    : [Motherboard]                 [3]
+ Continue to : [CPU]                         ***to be validated***
+ Redirect to : [Remove CPU]                  ***to be validated***
+Task Name    : [Remove CPU]                  [1]
+ Continue to : [CPU]                         ***to be validated***
+Task Name    : [CPU]                         [5]
+ Continue to : [Memory]                      ***to be validated***
+ Redirect to : [Remove CPU]                  ***to be validated***
+Task Name    : [Remove CPU]                  [1]
+ Continue to : [CPU]                         ***to be validated***
+Task Name    : [Memory]                      [4]
+ Continue to : [SSD]                         ***to be validated***
+ Redirect to : [Remove Memory]               ***to be validated***
+Task Name    : [Remove Memory]               [1]
+ Continue to : [Memory]                      ***to be validated***
+Task Name    : [SSD]                         [4]
+ Continue to : [GPU]                         ***to be validated***
+ Redirect to : [Remove SSD]                  ***to be validated***
+Task Name    : [Remove SSD]                  [1]
+ Continue to : [SSD]                         ***to be validated***
+Task Name    : [GPU]                         [3]
+ Continue to : [Test]                        ***to be validated***
+Task Name    : [Test]                        [4]
+ Continue to : [Approve]                     ***to be validated***
+ Redirect to : [Repair]                      ***to be validated***
+Task Name    : [Test / 4 / Approve / Repair] [1]
+Task Name    : [CPU]                         [5]
+ Continue to : [Memory]                      ***to be validated***
+ Redirect to : [Remove CPU]                  ***to be validated***
+Task Name    : [4]                           [SSD]
+ Continue to : [GPU]                         ***to be validated***
+ Redirect to : [Remove SSD]                  ***to be validated***
+Task Name    : [Repair]                      [1]
+Task Name    : [Approve]                     [1]
+
+Validating the Set of Tasks
+---------------------------
+
+List of Accepted Tasks
+----------------------
+Task Name    : [Power Supply]                [4]
+ Continue to : [Motherboard]                
+Task Name    : [Motherboard]                 [3]
+ Continue to : [CPU]                        
+ Redirect to : [Remove CPU]                 
+Task Name    : [Remove CPU]                  [1]
+ Continue to : [CPU]                        
+Task Name    : [CPU]                         [5]
+ Continue to : [Memory]                     
+ Redirect to : [Remove CPU]                 
+Task Name    : [Remove CPU]                  [1]
+ Continue to : [CPU]                        
+Task Name    : [Memory]                      [4]
+ Continue to : [SSD]                        
+ Redirect to : [Remove Memory]              
+Task Name    : [Remove Memory]               [1]
+ Continue to : [Memory]                     
+Task Name    : [SSD]                         [4]
+ Continue to : [GPU]                        
+ Redirect to : [Remove SSD]                 
+Task Name    : [Remove SSD]                  [1]
+ Continue to : [SSD]                        
+Task Name    : [GPU]                         [3]
+ Continue to : [Test]                       
+Task Name    : [Test]                        [4]
+ Continue to : [Approve]                    
+ Redirect to : [Repair]                     
+Task Name    : [Test / 4 / Approve / Repair] [1]
+Task Name    : [CPU]                         [5]
+ Continue to : [Memory]                     
+ Redirect to : [Remove CPU]                 
+Task Name    : [4]                           [SSD]
+ Continue to : [GPU]                        
+ Redirect to : [Remove SSD]                 
+Task Name    : [Repair]                      [1]
+Task Name    : [Approve]                     [1]
+
+*** Load and Accept the Customer Orders ***
+||| <-- *** no token found before the delimiter ***
+| Peter McIntyre     | <-- *** no token found before the delimiter ***
+
+List of Accepted Customer Orders
+--------------------------------
+Fardad Soleimanloo : Dell Precision 3600
+ - [00000] CPU
+ - [00000] Memory
+ - [00000] Memory
+Joseph Hughes      : HP Z230            
+ - [00000] CPU
+ - [00000] Memory
+Chris Szalwinski   : HP Z350            
+ - [00000] CPU
+ - [00000] Memory
+ - [00000] SSD
+ - [00000] GPU
+Elliott Coleshill  : HP Apollo 1000     
+ - [00000] CPU
+ - [00000] MEMORY
+ - [00000] Power Supply
+ - [00000] GPU
+
+*** Load and accept the Items in Stock ***
+|| <-- *** no token found before the delimiter ***
+|Fan|Fan| Place fan       |900| CoolMasters R56||| <-- *** no token found before the delimiter ***
+ | | | | | <-- *** no token found before the delimiter ***
+||PCIe SSD| <-- *** no token found before the delimiter ***
+
+List of In-Stock Items
+----------------------
+CPU                [00300] From CPU                 To Remove CPU
+                         : Central Processing Unit
+Memory             [00400] From Memory              To Remove Memory
+                         : Samsung Memory Stick
+GPU                [00500] From GPU                 To Remove GPU
+                         : Nvidia Geforce 750M
+Power Supply       [00100] From Power Supply        To Remove Power Supply
+                         : no detailed description
+SSD is unavailable
+MEMORY is unavailable
+CPU is unavailable
+Remove Memory is unavailable
+Remove GPU is unavailable
+Remove Power Supply is unavailable
+
+*** Fill the Customer Orders ***
+
+List of Processed Customer Orders
+---------------------------------
+Fardad Soleimanloo : Dell Precision 3600
+ + [00300] CPU
+ + [00400] Memory
+ + [00401] Memory
+Joseph Hughes      : HP Z230            
+ + [00301] CPU
+ + [00402] Memory
+Chris Szalwinski   : HP Z350            
+ + [00302] CPU
+ + [00403] Memory
+ - [00000] SSD
+ + [00500] GPU
+Elliott Coleshill  : HP Apollo 1000     
+ + [00303] CPU
+ - [00000] MEMORY
+ + [00100] Power Supply
+ + [00501] GPU
+
+Done!
+Press Enter Key to Exit ... 
+xxu85@matrix:~/oop345/finalproject/milestone3> exit
+exit
+
+Script done on Tue 08 Dec 2015 02:02:28 PM EST
