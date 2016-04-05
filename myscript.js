@@ -298,9 +298,11 @@ function validatePropValue() {
 	return tempError;
 }
 
-
-//downPay
 function validateDownPay() {
+	
+    //********************************************************************************//
+    //*  This function will validate the down payment  .                             *//
+    //********************************************************************************//   
 	var mortDownPayment = document.mortgage.downPay.value;
 	mortDownPayment = mortDownPayment.trim();
 	var mortDownPaymentLength = mortDownPayment.length;
@@ -347,9 +349,11 @@ function validateIncome(errMessages) {
 	return errMessages;	
 }
 
-
-//propDetails
 function validatePropDetails(errMessages) {
+	
+    //********************************************************************************//
+    //*  This function will validate the property details.                           *//
+    //********************************************************************************//   
 	var NoOfRadio = document.mortgage.propDetails.length;
 	var checked = 0;
 	var errorsCount = 0;
