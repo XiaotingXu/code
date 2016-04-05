@@ -29,7 +29,7 @@ function detailPaymentCalculation(mortAmount,mortDownPayment,mortRate,mortAmorti
            document.forms[0].payment.value = p;
      }
 
-} // End of detailPaymentCalculation function
+}
 
 
 function validationForPayment() {   
@@ -64,7 +64,7 @@ function validationForPayment() {
 	else {
 		document.getElementById("comments").value = paymentError;
 	}
-} // End of validationForPayment function
+} 
 
 function completeFormValidation() {
 
@@ -133,7 +133,7 @@ function completeFormValidation() {
 		}
 	}
 
-} // End of completeFormValidation
+}
 
 function validateUserId(errMessages){
 	
