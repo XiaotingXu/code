@@ -1,11 +1,5 @@
     //********************************************************************************//
-    //* Name :  XiaoTing Xu                                                                     *//
-    //* Zenit login : int222_151c29                                                     *//
-    //********************************************************************************//
-
-
-    //********************************************************************************//
-    //*   Do not modify any statements in detailPaymentCalculation function          *//
+    //* Name :  XiaoTing Xu                                                          *//
     //********************************************************************************//
 
 function detailPaymentCalculation(mortAmount,mortDownPayment,mortRate,mortAmortization) {
@@ -41,7 +35,7 @@ function detailPaymentCalculation(mortAmount,mortDownPayment,mortRate,mortAmorti
 function validationForPayment() {   
 
     //********************************************************************************//
-    //*   You will need to call the functions that validate the following:           *//
+    //*  This function will call the functions that validate the following:          *//
     //********************************************************************************//
     //*        (1)              (2)              (3)             (4)                 *//
     //********************************************************************************//
@@ -96,7 +90,7 @@ function completeFormValidation() {
     //*                                                                              *//
     //*    Change the 1st. character in the field called client to upper case        *//
     //*                                                                              *//
-    //*    Change the initial value in the field called jsActive from N to Y      *//
+    //*    Change the initial value in the field called jsActive from N to Y         *//
     //*                                                                              *//
     //*    Make sure to return true in order for the form to be submitted to the CGI *//
     //*                                                                              *//
@@ -141,8 +135,11 @@ function completeFormValidation() {
 
 } // End of completeFormValidation
 
-//userId
 function validateUserId(errMessages){
+	
+    //********************************************************************************//
+    //*  This function will validate the user ID.                                    *//
+    //********************************************************************************//   
 	var userId = document.mortgage.userId.value;
 	userId = userId.trim();
 	var userIdLength = userId.length;
@@ -195,8 +192,12 @@ function validateUserId(errMessages){
 	}
 	return errMessages;
 }
-//client
+
 function validateClient(errMessages){
+	
+    //********************************************************************************//
+    //*  This function will validate the client name.                                *//
+    //********************************************************************************//   
 	var client = document.mortgage.client.value;
 	client = client.trim();
 	var clientLength = client.length;
@@ -263,8 +264,12 @@ function validateClient(errMessages){
 	}
 	return errMessages;
 }
-//propValue
+
 function validatePropValue() {
+	
+    //********************************************************************************//
+    //*  This function will validate the property value.                             *//
+    //********************************************************************************//   
 	var mortAmount = document.mortgage.propValue.value;
 	mortAmount = mortAmount.trim();
 	var mortAmountLength = mortAmount.length;
@@ -324,8 +329,12 @@ function validateDownPay() {
 	return tempError;
 }
 
-//income
+
 function validateIncome(errMessages) {
+	
+    //********************************************************************************//
+    //*  This function will validate the user's incpme.                              *//
+    //********************************************************************************//   
 	var selected = document.mortgage.income.selectedIndex;
 	var errorsCount = 0;
 	if ( selected === -1) {
@@ -360,8 +369,11 @@ function validatePropDetails(errMessages) {
 	return errMessages;
 }
 
-//propLocation
 function validatePropLocation(errMessages) {
+	
+    //********************************************************************************//
+    //*  This function will validate the location of user's property.                *//
+    //********************************************************************************//   
 	var NoOfOptions = document.mortgage.propLocation.options.length;
 	var selected = document.mortgage.propLocation.selectedIndex;
 	var errorsCount = 0;
@@ -375,8 +387,11 @@ function validatePropLocation(errMessages) {
 	return errMessages;
 }
 
-//mortYear
 function validateMortYear(errMessages) {
+	
+    //********************************************************************************//
+    //*  This function will validate the mortgage year.                              *//
+    //********************************************************************************//   
 	var mortYear = document.mortgage.mortYear.value;
 	mortYear = mortYear.trim();
 	var mortYearLength = mortYear.length;
@@ -404,8 +419,11 @@ function validateMortYear(errMessages) {
 	return errMessages;
 }
 
-//mortMonth
 function validateMortMonth(errMessages) {
+	
+    //********************************************************************************//
+    //*  This function will validate the mortgage month.                             *//
+    //********************************************************************************//   
 	var mortMonth = document.mortgage.mortMonth.value;
 	mortMonth = mortMonth.trim();
 	var mortMonthLength = mortMonth.length;
@@ -439,8 +457,11 @@ function validateMortMonth(errMessages) {
 	return errMessages;
 }
 
-//intRate
 function validateIntRate() {
+	
+    //********************************************************************************//
+    //*  This function will validate the interest rate.                              *//
+    //********************************************************************************//   
 	var intRate = document.mortgage.intRate.value;
 	intRate = intRate.trim();
 	var intRateLength = intRate.length;
@@ -469,8 +490,11 @@ function validateIntRate() {
 	return tempError;		
 }
 
-//amortization
 function validateAmortization() {
+	
+    //********************************************************************************//
+    //*  This function will validate the amortization.                               *//
+    //********************************************************************************//   
 	var amortization = document.mortgage.amortization.value;
 	amortization = amortization.trim();
 	var amortizationLength = amortization.length;
