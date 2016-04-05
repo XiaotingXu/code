@@ -9,7 +9,8 @@ import java.util.*;
 public class CardValidation {
 
 	/**
-	 * @param args
+	 * @param  l  the credit card number
+	 * @return    a list collection of the seperated digits of credit card number in order
 	 */
 	public static List<Long> toDigits(long l) { 
 		
@@ -21,7 +22,8 @@ public class CardValidation {
 		return DigitsList;
 	}
 	/**
-	 * @param args
+	 * @param  l  the credit card number
+	 * @return    a list collection of the seperated digits of credit card number in reverse order
 	 */
 	public static List<Long> toDigitsReverse(long l) { 
 		
@@ -36,7 +38,8 @@ public class CardValidation {
 		return  DigitsListReverse;
 	}
 	/**
-	 * @param args
+	 * @param list  a list collection of the seperated digits of credit card number
+	 * @return      a list collection of the digits of credit card number after calculation
 	 */
 	public static List<Long> doubleSecond(List<Long> list) {
 		
@@ -53,7 +56,8 @@ public class CardValidation {
 		return DoubleSecondDigitsList;
 	}
 	/**
-	 * @param args
+	 * @param list  a list collection of the seperated digits of credit card number
+	 * @return      summary of all digits
 	 */
 	public static long sumDigits(List<Long> list) {
 		
@@ -69,7 +73,8 @@ public class CardValidation {
 		return sum;
 	}
 	/**
-	 * @param args
+	 * @param l  the credit card number
+	 * @return   true if the credit card number is valid; otherwise, false
 	 */
 	public static boolean isValid(long l) {
 		
