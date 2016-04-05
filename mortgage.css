@@ -1,0 +1,131 @@
+body {background: #eee}
+nav ul {margin: 0}
+nav {
+	background-color: #fff;
+	text-align: center;
+	margin: 0;
+	padding: 15px;
+}
+nav li {
+	display: inline;
+	margin: 0;
+}
+nav li a {
+	color: #000;	
+	padding: 12px 10px;
+	font-weight: 700;
+	font-size: 15px;
+	text-decoration: none;
+}
+nav li a:hover {
+	color: #555;
+}
+.tableContainer {
+              display:         table;
+              width:           1100px;
+              border:          #555 groove 3px;
+              border-collapse: collapse; 
+              margin:          auto;
+        } 
+.cellContainer1 {
+              display:         table-cell;
+              width:           450px;
+              border:          #555 groove 2px;
+              color:           #000;	
+			  padding: 		   10px 5px;
+	}
+.cellContainer2 {
+              display:         table-cell;
+              width:           300px;
+              border:          #555 groove 2px;
+              color:           #000;	
+			  padding: 		   10px 5px;
+			  height:          500px;
+	}
+.cellContainerInside1 {
+              display:         table-cell;
+              width:           200px;
+              color:           #000;	
+	}
+.cellContainerInside2 {
+              display:         table-cell;
+              width:           250px;
+              color:           #000;	
+	}
+.fontColor {
+	color:#C00;
+}
+h3{
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:800;
+	text-align:center;	
+}
+fieldset {
+	border: 2px groove #555;
+}	
+.errorsHeight {
+	background-color:#fff;
+}
+
+legend{
+	background-color:#fff;
+	border:#555 groove 2px;
+	color:#000;
+	font-weight: bold;
+    padding: 3px; 
+}
+.button {
+		  border:                2px groove #555;
+ 	      background-color:      #fff;
+	      margin-left:           50px;
+		  margin-bottom:         10px;
+		  color:                 #000;
+}
+.width1{
+	width=150px;	
+}
+.width2{
+	width=250px;
+	display:inline;
+}
+.margin{
+	margin-left:85px;
+}
+.textarea1{
+	width:                     420px;
+}
+.errors{
+	width:340px;
+}
+.honesty{
+	margin:50px;
+	padding:50px;
+}
+hr {
+	display: block;
+	height: 1px;
+	border: 0;
+	border-top: 1px solid #ccc;
+	margin: 10px 0;
+	padding: 0;
+}
+
+footer {
+	padding:20px 0;
+	display: block;
+	text-align: center;
+	color:#555;
+	background-color: #fff;
+}
+.forErrors {
+    display:            block;
+    width:              340px;
+    height:             450px;
+    border:             1px solid #aaa;
+    padding:            5px;
+    overflow-y:         scroll;
+    text-align:         left;
+	list-style-position:inside;
+}
+.bold{  font-weight:    bold;}
+.highlight {color:      #ff0000;}
